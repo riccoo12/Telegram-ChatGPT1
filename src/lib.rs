@@ -6,6 +6,7 @@ use openai_flows::{
 };
 use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
+use browser_op::{BrowserOp, BrowserOpIcon};
 
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
