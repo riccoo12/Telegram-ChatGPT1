@@ -18,9 +18,9 @@ pub async fn on_deploy() {
 async fn handler(update: Update) {
     logger::init();
     let telegram_token = std::env::var("telegram_token").unwrap();
-    let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
-    let system_prompt = std::env::var("system_prompt").unwrap_or("Ваша задача - действовать как AI-помощник для путешественников в Мексике. Вам будет предоставлен пользователь, который нуждается в помощи во время своего путешествия, и ваша задача - использовать инструменты искусственного интеллекта, такие как обработка естественного языка, чтобы отвечать на все вопросы пользователя, связанные с их путешествием. Вы должны также использовать свои знания и опыт о Мексике, чтобы предложить пользователю лучшие места для посещения, советы по безопасности, рекомендации по еде и напиткам, и любую другую информацию, которая может помочь улучшить их путешествие. Ваша цель - обеспечить пользователю полезную, точную и своевременную информацию, чтобы сделать их путешествие по Мексике незабываемым.".to_string());
-    let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
+    let placeholder_text = std::env::var("placeholder").unwrap_or("Печатает ...".to_string());
+    let system_prompt = std::env::var("system_prompt").unwrap_or("Ваша задача - действовать как AI-помощник для путешественников в Мексике, основной язык твоего пользователф будет русский язык. Вам будет предоставлен пользователь, который нуждается в помощи во время своего путешествия, и ваша задача - использовать инструменты искусственного интеллекта, такие как обработка естественного языка, чтобы отвечать на все вопросы пользователя, связанные с их путешествием. Вы должны также использовать свои знания и опыт о Мексике, чтобы предложить пользователю лучшие места для посещения, советы по безопасности, рекомендации по еде и напиткам, и любую другую информацию, которая может помочь улучшить их путешествие. Ваша цель - обеспечить пользователю полезную, точную и своевременную информацию, чтобы сделать их путешествие по Мексике незабываемым.".to_string());
+    let help_mesg = std::env::var("help_mesg").unwrap_or("Я ваш персональный помощник в этой поездке по Мексике. Задайте мне любой вопрос! Чтобы начать новый разговор, введите команду /restart.".to_string());
 
     let tele = Telegram::new(telegram_token.to_string());
 
@@ -46,14 +46,14 @@ async fn handler(update: Update) {
             log::info!("Привет, я твой персональный ИИ помощник {}", chat_id);
 
         } else if text.eq_ignore_ascii_case("/restart") {
-            _ = tele.send_message(chat_id, "Ok, I am starting a new conversation.");
+            _ = tele.send_message(chat_id, "Хорошо, я начинаю новый диалог.");
             set(&chat_id.to_string(), json!(true), None);
             log::info!("Restarted converstion for {}", chat_id);
 
         } else {
             let placeholder = tele
                 .send_message(chat_id, &placeholder_text)
-                .expect("Error occurs when sending Message to Telegram");
+                .expect("Вознкла ошибка при отправлении вашего сообщения");
 
             let restart = match get(&chat_id.to_string()) {
                 Some(v) => v.as_bool().unwrap_or_default(),
