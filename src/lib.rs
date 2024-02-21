@@ -8,6 +8,9 @@ use store_flows::{get, set};
 use flowsnet_platform_sdk::logger;
 use browser_op::{BrowserOp, BrowserOpIcon};
 
+// Шаг 1: Импортируйте необходимые модули
+use browser_op::{BrowserOp, BrowserOpIcon};
+
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
 pub async fn on_deploy() {
@@ -24,6 +27,15 @@ async fn handler(update: Update) {
     let help_mesg = std::env::var("help_mesg").unwrap_or("Я ваш персональный помощник в этой поездке по Мексике. Задайте мне любой вопрос! Чтобы начать новый разговор, введите команду /restart.".to_string());
 
     let tele = Telegram::new(telegram_token.to_string());
+
+    // Шаг 2: Определите информацию о плагине BrowserOp
+    let browser_op_info = PluginInfo { 
+        name: "BrowserOp", 
+        icon: BrowserOpIcon::SUPPORTED, 
+        description: "Browse dozens of webpages in one query. Fetch information more efficiently.", 
+        ai_description: "This tool offers the feature for users to input a URL or multiple URLs and interact with them as needed. It's designed to comprehend the user's intent and proffer tailored suggestions in line with the content and functionality of the webpage at hand. Services like text rewrites, translations and more can be requested. When users need specific information to finish a task or if they intend to perform a search, this tool becomes a bridge to the search engine and generates responses based on the results. Whether the user is seeking information about restaurants, rentals, weather, or shopping, this tool connects to the internet and delivers the most recent results.", 
+        example_prompts: vec![ "In two sentences tell me what this site is about `]
+    };
 
     if let UpdateKind::Message(msg) = update.kind {
         let chat_id = msg.chat.id;
@@ -65,6 +77,10 @@ async fn handler(update: Update) {
                 set(&chat_id.to_string(), json!(false), None);
                 co.restart = true;
             }
+
+            // Шаг 3: Интегрируйте функциональность BrowserOp
+            let browser_op = BrowserOp::new();
+            let result = browser_op.browse_multiple_pages(urls);
 
             match openai.chat_completion(&chat_id.to_string(), &text, &co).await {
                 Ok(r) => {
