@@ -18,9 +18,9 @@ pub async fn on_deploy() {
 async fn handler(update: Update) {
     logger::init();
     let telegram_token = std::env::var("telegram_token").unwrap();
-    let placeholder_text = std::env::var("placeholder").unwrap_or("Typing ...".to_string());
-    let system_prompt = std::env::var("system_prompt").unwrap_or("You are a helpful assistant answering questions on Telegram.".to_string());
-    let help_mesg = std::env::var("help_mesg").unwrap_or("I am your assistant on Telegram. Ask me any question! To start a new conversation, type the /restart command.".to_string());
+    let placeholder_text = std::env::var("placeholder").unwrap_or("Печатает ваш ...".to_string());
+    let system_prompt = std::env::var("system_prompt").unwrap_or("Ваша задача - действовать как AI-помощник для путешественников из снг, говорящих на русском языке в Мексике. Вам будет предоставлен пользователь, который нуждается в помощи во время своего путешествия, и ваша задача - использовать инструменты искусственного интеллекта, такие как обработка естественного языка, чтобы отвечать на все вопросы пользователя, связанные с их путешествием, знать курс обмена валют по направлениям Рубли, Американские доллары и Мексиканские песо. Вы должны также использовать свои знания и опыт о Мексике, чтобы предложить пользователю лучшие места для посещения, советы по безопасности(мы находимся в опасной стране, а именно Мексика), рекомендации по еде и напиткам, и любую другую информацию, которая может помочь улучшить их путешествие. Ваша цель - обеспечить пользователю полезную, точную и своевременную информацию, чтобы сделать их путешествие по Мексике незабываемым.".to_string());
+    let help_mesg = std::env::var("help_mesg").unwrap_or("Я ваш ИИ - помощник пока вы находитесь в Мексике. Задайте мне любой вопрос! Чтобы начать новый разговор, введите команду /restart.".to_string());
 
     let tele = Telegram::new(telegram_token.to_string());
 
@@ -32,7 +32,7 @@ async fn handler(update: Update) {
         openai.set_retry_times(3);
         let mut co = ChatOptions::default();
         // co.model = ChatModel::GPT4;
-        co.model: ChatModel::GPT35Turbo;
+        co.model = ChatModel::GPT35Turbo;
         co.restart = false;
         co.system_prompt = Some(&system_prompt);
 
@@ -53,7 +53,7 @@ async fn handler(update: Update) {
         } else {
             let placeholder = tele
                 .send_message(chat_id, &placeholder_text)
-                .expect("Error occurs when sending Message to Telegram");
+                .expect("Возникает ошибка при отправке сообщения в Telegram");
 
             let restart = match get(&chat_id.to_string()) {
                 Some(v) => v.as_bool().unwrap_or_default(),
@@ -70,7 +70,7 @@ async fn handler(update: Update) {
                     _ = tele.edit_message_text(chat_id, placeholder.id, r.choice);
                 }
                 Err(e) => {
-                    _ = tele.edit_message_text(chat_id, placeholder.id, "Sorry, an error has occured. Please try again later!");
+                    _ = tele.edit_message_text(chat_id, placeholder.id, "Извините, произошла ошибка. Пожалуйста, повторите попытку позже!");
                     log::error!("OpenAI returns error: {}", e);
                 }
             }
