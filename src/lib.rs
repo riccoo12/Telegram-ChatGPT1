@@ -43,7 +43,7 @@ async fn handler(update: Update) {
         } else if text.eq_ignore_ascii_case("/start") {
             _ = tele.send_message(chat_id, &help_mesg);
             set(&chat_id.to_string(), json!(true), None);
-            log::info!("Started converstion for {}", chat_id);
+            log::info!("Привет, я твой персональный ИИ помощник {}", chat_id);
 
         } else if text.eq_ignore_ascii_case("/restart") {
             _ = tele.send_message(chat_id, "Ok, I am starting a new conversation.");
